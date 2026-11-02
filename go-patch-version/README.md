@@ -74,11 +74,11 @@ Every input is optional unless marked **required**.
 
 ### Which branches to bump
 
-| Input            | Default      | What it does                                                                            |
-| ---------------- | ------------ | --------------------------------------------------------------------------------------- |
-| `branches`       | **required** | The branches to process, one per line. See below for the format.                        |
-| `default-go-tag` | _(empty)_    | Fallback builder image tag (or `=x.y.z`) for branch entries that don't carry their own. |
-| `fail-fast`      | `false`      | Stop at the first branch that fails. By default the rest still get their turn.          |
+| Input            | Default      | What it does                                                                                                                                                         |
+| ---------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `branches`       | **required** | The branches to process, one per line. See below for the format.                                                                                                     |
+| `default-go-tag` | _(empty)_    | Fallback builder image tag (or `=x.y.z`) for branch entries that don't carry their own. Required when any `branches` entry omits a `:<builder-image-tag>`/`:=x.y.z`. |
+| `fail-fast`      | `false`      | Stop at the first branch that fails. By default the rest still get their turn.                                                                                       |
 
 Each line of `branches` can take one of three shapes:
 
@@ -87,7 +87,7 @@ branches: |
   devel:rhel_9_golang_1.26   # probe this image tag, use the version it reports
   release-4.22:1.25          # also a tag — "1.25" is just the tag name here
   release-4.21:=1.25.3       # pinned: use exactly 1.25.3, don't touch any registry
-  release-4.18               # no value, so default-go-tag is used
+  release-4.18               # no value, so default-go-tag must be set.
 ```
 
 The leading `=` is the thing to remember: it means "this is a version, not a
@@ -173,7 +173,6 @@ All of the message and title templates understand these placeholders:
 | `setup-go`    | `true`    | Install Go with `actions/setup-go`. Set to `false` to use whatever Go the runner already has.                                                                                          |
 | `gotoolchain` | `auto`    | Value of `GOTOOLCHAIN`. `auto` lets Go download the toolchain matching each branch's new `go` directive; use `local` if the runner must not download toolchains.                       |
 | `dry-run`     | `false`   | Do all the work locally but skip the push and the pull request. The resulting diff is printed to the log — great for a first try.                                                      |
-| `work-dir`    | _(empty)_ | Directory for the per-branch clones. Defaults to a temp directory under the runner.                                                                                                    |
 
 Boolean inputs accept `true`, `yes` or `1` as "on"; anything else is off.
 

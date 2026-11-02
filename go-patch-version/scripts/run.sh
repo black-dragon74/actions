@@ -15,7 +15,17 @@ if [[ -z "$(split_list "${BRANCHES}")" ]]; then
   exit 1
 fi
 
-work_dir="${WORK_DIR:-${RUNNER_TEMP:-/tmp}/go-patch-version}"
+if [[ -z "${DEFAULT_GO_TAG}" ]]; then
+  while read -r entry; do
+    if [[ "${entry}" != *:* || -z "${entry#*:}" ]]; then
+      err "branch '${entry}' has no builder-image-tag/:=x.y.z and" \
+        "'default-go-tag' is empty"
+      exit 1
+    fi
+  done < <(split_list "${BRANCHES}")
+fi
+
+work_dir="${RUNNER_TEMP:-/tmp}/go-patch-version"
 mkdir -p "${work_dir}"
 
 # We use gh cli, export GH_HOST if needed so it respects the origin.
