@@ -28,7 +28,8 @@ inputs:
     description: >-
       Builder image tag (or "=x.y.z" pinned version) used for branch entries
       that do not carry their own value. A pinned value is used without any
-      image probes.
+      image probes. Must not be empty if any `branches` entry omits its own
+      builder-image-tag/:=x.y.z.
     required: false
     default: ""
   fail-fast:
@@ -107,8 +108,7 @@ inputs:
   vendor:
     description: >-
       `auto` vendors a module only when it already has a vendor directory,
-      `true` always vendors, `false` never does. Keep it auto, we don't have
-      vendor in csi repo api module.
+      `true` always vendors, `false` never does.
     required: false
     default: auto
   deps-update-command:
@@ -216,7 +216,7 @@ inputs:
     description: >-
       Bootstrap Go used to drive the module updates. The exact per-branch
       toolchain is still fetched automatically when `gotoolchain` is `auto`.
-      Ideally, keep it stable, keep toolachain to auto and we should be good.
+      Ideally, keep it stable, keep toolchain to auto and we should be good.
     required: false
     default: stable
   setup-go:
@@ -236,10 +236,6 @@ inputs:
       resulting diff is printed to the log.
     required: false
     default: "false"
-  work-dir:
-    description: Directory used for the per-branch clones. Can be dropped from inputs as well.
-    required: false
-    default: ""
 
 outputs:
   results:
@@ -334,6 +330,5 @@ runs:
         DRAFT: ${{ inputs.draft }}
         GOTOOLCHAIN: ${{ inputs.gotoolchain }}
         DRY_RUN: ${{ inputs.dry-run }}
-        WORK_DIR: ${{ inputs.work-dir }}
         ACTION_PATH: ${{ github.action_path }}
       run: bash "${ACTION_PATH}/scripts/run.sh"
